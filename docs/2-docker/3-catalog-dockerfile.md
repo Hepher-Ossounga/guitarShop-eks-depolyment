@@ -147,7 +147,7 @@ Expected response:
 ```json
 {"status":"UP","service":"guitarshop-catalog"}
 ```
-
+<img src="../../images/catalog-health.png" width="1000"/>
 ---
 
 ## VIII. Cleanup
