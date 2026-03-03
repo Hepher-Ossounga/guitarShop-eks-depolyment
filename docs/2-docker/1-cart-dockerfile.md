@@ -118,9 +118,8 @@ Expected response:
 
 ```json
 {"status":"UP","service":"guitarshop-cart"}
-
-<img src="../../images/cart-health.png" width="1000"/>
 ```
+<img src="../../images/cart-health.png" width="1000"/>
 
 ---
 
