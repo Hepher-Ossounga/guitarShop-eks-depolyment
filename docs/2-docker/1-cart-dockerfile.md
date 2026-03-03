@@ -64,6 +64,11 @@ docker network create guitarshop-test
 
 ## IV. Start Redis
 
+The cart service uses Redis because a shopping cart is **temporary session data** — it needs
+to be read and written on every page interaction, so speed matters more than durability.
+Redis stores everything in memory, making reads and writes near-instant. If the cart data
+is lost on a restart, the user just starts a new cart — no lasting harm.
+
 ```bash
 docker run -d \
   --name test-redis \

@@ -13,32 +13,36 @@ It uses a two-stage Docker build to produce a small, secure final image.
 
 ---
 
-## II. The Dockerfile Explained
+## II. Create the Catalog Dockerfile
 
+Navigate to the catalog service directory and create the Dockerfile.
+
+```bash
+cd guitarShop-App/catalog
+vim Dockerfile
+```
+
+Dockerfile:
 ```dockerfile
 # Stage 1 — Build
-FROM golang:1.21-alpine AS builder   # Go 1.21 compiler on Alpine Linux
+FROM golang:1.21-alpine AS builder  
 
 WORKDIR /app
 
-RUN apk add --no-cache git           # Git required by go mod download
+RUN apk add --no-cache git           
 
 COPY go.mod go.sum ./
-RUN go mod download                  # Download dependencies (cached layer)
+RUN go mod download                  
 
 COPY cmd/ ./cmd/
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o catalog ./cmd/main.go
-                                     # Compile into a single binary
 
 # Stage 2 — Runtime
-FROM alpine:3.19                     # Minimal Linux, no compiler, no Go toolchain
+FROM gcr.io/distroless/static-debian12   
 
 WORKDIR /app
-RUN addgroup -S guitarshop && adduser -S guitarshop -G guitarshop
-
 COPY --from=builder /app/catalog .
-RUN chown guitarshop:guitarshop catalog
-USER guitarshop                      # Run as non-root for security
+USER nonroot                             
 
 EXPOSE 8080
 
@@ -48,7 +52,7 @@ ENTRYPOINT ["/app/catalog"]
 | Stage   | Base Image         | Purpose                              |
 |---------|--------------------|--------------------------------------|
 | builder | golang:1.21-alpine | Compile Go source into a binary      |
-| runtime | alpine:3.19        | Run the binary, nothing else         |
+| runtime | gcr.io/distroless/static-debian12 | Run the binary, nothing else  |
 
 > Key build flags: `CGO_ENABLED=0` disables C bindings (pure Go binary),
 > `GOOS=linux` targets Linux, `-ldflags="-s -w"` strips debug info to reduce image size.
@@ -72,6 +76,12 @@ docker network create guitarshop-test
 
 ## IV. Start MySQL
 
+The catalog service uses MySQL because it stores **structured, relational product data** —
+guitars, categories, prices, descriptions — that benefits from SQL queries with filtering
+and joins. The other services use different databases suited to their own data shape:
+cart uses Redis (fast key-value session data), checkout and orders use PostgreSQL
+(transactional writes where ACID guarantees matter).
+
 ```bash
 docker run -d \
   --name test-catalog-db \
@@ -90,7 +100,6 @@ docker run -d \
 ## V. Build the Catalog Image
 
 ```bash
-cd microservices/catalog
 docker build -t guitarshop-catalog-test .
 ```
 
