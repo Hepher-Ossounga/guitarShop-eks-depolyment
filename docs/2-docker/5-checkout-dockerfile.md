@@ -52,6 +52,9 @@ CMD ["node", "src/index.js"]
 > connection details from environment variables at runtime:
 > - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` → PostgreSQL
 > - `RABBITMQ_URL` → RabbitMQ
+>
+> See [6-checkout-config.md](6-checkout-config.md) for how each variable is consumed
+> across `index.js`, `db.js`, and `messaging.js`.
 
 ---
 

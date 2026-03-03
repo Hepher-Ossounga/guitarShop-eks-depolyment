@@ -50,6 +50,9 @@ ENTRYPOINT ["java","-jar", "app.jar"]
 > connection details from environment variables at runtime:
 > - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` → PostgreSQL
 > - `RABBITMQ_HOST`, `RABBITMQ_PORT`, `RABBITMQ_USER`, `RABBITMQ_PASSWORD` → RabbitMQ
+>
+> These are injected into `application.yml` placeholders at startup. See
+> [8-orders-config.md](8-orders-config.md) for the full config walkthrough.
 
 > Note: orders uses `eclipse-temurin:17-jre-jammy` instead of `distroless` (used by cart).
 > It includes a shell, which is useful for debugging but slightly larger.

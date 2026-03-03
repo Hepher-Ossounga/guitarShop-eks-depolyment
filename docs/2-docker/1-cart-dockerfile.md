@@ -25,20 +25,20 @@ vim Dockerfile
 Dockerfile:
 ```dockerfile
 # Stage 1 — Build
-FROM maven:3.9-eclipse-temurin-17 AS builder   # Maven + Java 17 to compile the code
+FROM maven:3.9-eclipse-temurin-17 AS builder
 
 WORKDIR /app
 COPY pom.xml .
-RUN mvn dependency:go-offline -B            
+RUN mvn dependency:go-offline -B
 
 COPY src ./src
-RUN mvn clean package -DskipTests -B           
+RUN mvn clean package -DskipTests -B
 
 # Stage 2 — Runtime
-FROM gcr.io/distroless/java17-debian12         
+FROM gcr.io/distroless/java17-debian12
 
 WORKDIR /app
-COPY --from=builder /app/target/cart-service.jar app.jar
+COPY --from=builder /app/target/*.jar app.jar
 
 EXPOSE 8080
 
@@ -76,7 +76,6 @@ docker run -d \
 ## V. Build the Cart Image
 
 ```bash
-cd microservices/cart
 docker build -t guitarshop-cart-test .
 ```
 
@@ -101,6 +100,10 @@ docker run -d \
 | `-e REDIS_HOST` | Tell the app where Redis is (by container name) |
 | `-e REDIS_PORT` | Redis default port                              |
 
+> These env vars are injected into `application.yml` via `${REDIS_HOST:cart-redis}` and
+> `${REDIS_PORT:6379}` placeholders — the same file that sets the port and enables health
+> endpoints. See [2-cart-config.md](2-cart-config.md) for the full walkthrough.
+
 ---
 
 ## VII. Verify
@@ -108,13 +111,14 @@ docker run -d \
 Replace `<EC2-PUBLIC-IP>` with your EC2 instance's public IP address.
 
 ```bash
-curl http://<EC2-PUBLIC-IP>:8080/cart/health
+http://<EC2-PUBLIC-IP>:8080/cart/health
 ```
 
 Expected response:
 
 ```json
 {"status":"UP","service":"guitarshop-cart"}
+<img src="../../images/cart-health.png" width="1000"/>
 ```
 
 ---
@@ -126,3 +130,4 @@ docker stop test-cart test-redis
 docker rm test-cart test-redis
 docker network rm guitarshop-test
 ```
+

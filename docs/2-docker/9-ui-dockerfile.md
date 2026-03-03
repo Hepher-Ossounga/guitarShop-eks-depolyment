@@ -54,6 +54,9 @@ ENTRYPOINT ["java","-jar", "app.jar"]
 > - `CART_SERVICE_URL` → cart service
 > - `CHECKOUT_SERVICE_URL` → checkout service
 > - `ORDERS_SERVICE_URL` → orders service
+>
+> These map to `${CATALOG_SERVICE_URL:http://catalog:8080}` and equivalent placeholders
+> in `application.yml`. See [10-ui-config.md](10-ui-config.md) for the full config walkthrough.
 
 > Unlike other services, the UI has **no database**. It depends entirely on the
 > four backend microservices being reachable on the network.

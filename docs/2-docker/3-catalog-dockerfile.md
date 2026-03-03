@@ -54,7 +54,9 @@ ENTRYPOINT ["/app/catalog"]
 > `GOOS=linux` targets Linux, `-ldflags="-s -w"` strips debug info to reduce image size.
 
 > The Dockerfile has no mention of MySQL. The app reads `DB_HOST`, `DB_PORT`,
-> `DB_NAME`, `DB_USER`, and `DB_PASSWORD` from environment variables at runtime.
+> `DB_NAME`, `DB_USER`, and `DB_PASSWORD` from environment variables at runtime — directly
+> in `cmd/main.go` via a `getEnv()` helper. See [4-catalog-config.md](4-catalog-config.md)
+> for how each variable is used.
 
 ---
 
