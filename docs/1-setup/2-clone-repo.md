@@ -32,13 +32,6 @@ ls -la
 ```
 
 You should see:
-<img src="../images/ls-la.png" width="1000"/>
+<img src="../../images/ls-la.png" width="1000"/>
 ```
-guitarshop-app/
-├── cart/
-├── catalog/
-├── checkout/
-├── orders/
-├── ui/
-└── readme.md
 ```
