@@ -13,8 +13,16 @@ and persists them to a PostgreSQL database. It uses a two-stage Docker build.
 
 ---
 
-## II. The Dockerfile Explained
+## II. Create the Orders Dockerfile
 
+Navigate to the orders service directory and create the Dockerfile.
+
+```bash
+cd microservices/orders
+vim Dockerfile
+```
+
+Dockerfile:
 ```dockerfile
 # Stage 1 — Build
 FROM maven:3.9-eclipse-temurin-17 AS builder   # Maven + Java 17 to compile the code
@@ -69,6 +77,10 @@ docker network create guitarshop-test
 
 ## IV. Start PostgreSQL
 
+Orders uses PostgreSQL to **persist order records** durably. Each order consumed from
+RabbitMQ is written to the database — PostgreSQL's ACID guarantees mean no order is
+lost or partially written even if the service crashes mid-write.
+
 ```bash
 docker run -d \
   --name test-orders-db \
@@ -82,6 +94,10 @@ docker run -d \
 ---
 
 ## V. Start RabbitMQ
+
+Orders **consumes** from the `checkout.events` queue that the checkout service publishes
+to. RabbitMQ decouples the two services — checkout doesn't wait for orders to respond,
+and orders processes events in its own time.
 
 ```bash
 docker run -d \
@@ -99,7 +115,6 @@ docker run -d \
 ## VI. Build the Orders Image
 
 ```bash
-cd microservices/orders
 docker build -t guitarshop-orders-test .
 ```
 

@@ -14,8 +14,16 @@ It uses a two-stage Docker build to install only production dependencies in the 
 
 ---
 
-## II. The Dockerfile Explained
+## II. Create the Checkout Dockerfile
 
+Navigate to the checkout service directory and create the Dockerfile.
+
+```bash
+cd microservices/checkout
+vim Dockerfile
+```
+
+Dockerfile:
 ```dockerfile
 # Stage 1 — Dependencies
 FROM node:18-alpine AS deps        # Node 18 on Alpine to install packages
@@ -68,6 +76,10 @@ docker network create guitarshop-test
 
 ## IV. Start PostgreSQL
 
+Checkout uses PostgreSQL because it stores **completed order records** — transactional
+data that must not be lost. PostgreSQL guarantees ACID compliance, meaning a checkout
+either fully succeeds or fully rolls back, with no partial writes.
+
 ```bash
 docker run -d \
   --name test-checkout-db \
@@ -81,6 +93,10 @@ docker run -d \
 ---
 
 ## V. Start RabbitMQ
+
+After saving an order to PostgreSQL, checkout **publishes** an event to RabbitMQ so the
+orders service can pick it up asynchronously. The two services never talk directly to each
+other — RabbitMQ is the message broker between them.
 
 ```bash
 docker run -d \
@@ -98,7 +114,6 @@ docker run -d \
 ## VI. Build the Checkout Image
 
 ```bash
-cd microservices/checkout
 docker build -t guitarshop-checkout-test .
 ```
 

@@ -15,8 +15,16 @@ pages that users see. It uses a two-stage Docker build.
 
 ---
 
-## II. The Dockerfile Explained
+## II. Create the UI Dockerfile
 
+Navigate to the UI service directory and create the Dockerfile.
+
+```bash
+cd microservices/ui
+vim Dockerfile
+```
+
+Dockerfile:
 ```dockerfile
 # Stage 1 — Build
 FROM maven:3.9-eclipse-temurin-17 AS builder   # Maven + Java 17 to compile the code
@@ -77,7 +85,6 @@ point the UI at them via environment variables.
 ## IV. Build the UI Image
 
 ```bash
-cd microservices/ui
 docker build -t guitarshop-ui-test .
 ```
 
