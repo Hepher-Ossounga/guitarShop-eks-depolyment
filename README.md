@@ -12,6 +12,7 @@ Runs fully locally with Docker.
 <img src="./images/preview.png" width="1000"/>
 
 ## Component Diagram
+<!-- diagram.png is generated from the Mermaid markup in the next section -->
 <img src="./images/diagram.png" width="1000"/>
 
 ##  Architecture Diagram
