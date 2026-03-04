@@ -1,8 +1,4 @@
-Here's the merged article:
-
----
-
-**Building a Microservices E-Commerce App: Architecture Decisions Explained**
+# Building a Microservices E-Commerce App: Architecture Decisions Explained
 
 *How GuitarShop is structured — and why every decision was made*
 
@@ -14,7 +10,7 @@ This article walks through how GuitarShop is built, and more importantly, the ar
 
 ---
 
-**What Are Microservices?**
+## What Are Microservices?
 
 A traditional monolithic app bundles everything together: product listings, cart logic, checkout, and order tracking all live in one codebase, share one database, and deploy as one unit. That works fine at small scale, but becomes a liability as the app grows — a bug in the checkout flow can take down the entire store.
 
@@ -22,7 +18,7 @@ Microservices break the app into small, independent services. Each service does 
 
 ---
 
-**The Architecture at a Glance**
+## The Architecture at a Glance
 
 ```
 Browser → UI Service (Java/Spring Boot)
@@ -40,31 +36,31 @@ The UI Service is the only thing the browser talks to. It coordinates calls to b
 
 ---
 
-**Polyglot Persistence: Match the Tool to the Problem**
+## Polyglot Persistence: Match the Tool to the Problem
 
 In a monolithic app, you pick one database and every feature uses it — whether it's a good fit or not. A shopping cart and a financial transaction end up in the same table, even though they have completely different requirements.
 
 Microservices flip this. Each service owns its data and picks the storage technology that fits its actual workload. This is called **polyglot persistence**, and GuitarShop is a textbook example of it in practice.
 
-**Catalog Service — Go + MySQL**
+### Catalog Service — Go + MySQL
 
 The catalog service handles product listings: browsing guitars, viewing details, searching inventory. You have products, categories, variants, and pricing tiers — data with clear relationships that benefit from JOIN queries and structured schemas. MySQL is the natural fit. Go backs the service itself for its speed and low memory footprint, since read-heavy workloads benefit from Go's lightweight goroutines.
 
-**Cart Service — Java + Redis**
+### Cart Service — Java + Redis
 
 The cart service manages what's in a user's session. Cart data needs to be read and written constantly as users browse, instantly accessible, and it's only meaningful during an active session. A relational database can handle this, but it's overkill. You're essentially storing `cart:user123 → [item_a, item_b]` and retrieving it repeatedly. That's exactly what Redis was built for — an in-memory key-value store that returns data in under a millisecond.
 
-**Checkout Service — Node.js + PostgreSQL**
+### Checkout Service — Node.js + PostgreSQL
 
 Checkout handles the moment a user submits their order: validating items, capturing payment info, and recording the transaction. If something goes wrong mid-write — a server crash, a network blip — you cannot end up in a state where the payment was charged but the order wasn't recorded. PostgreSQL's ACID transactions guarantee that a set of operations either all succeed or all fail together. No partial state, no data corruption. Node.js backs the service for its event-driven, non-blocking nature — well suited for I/O-heavy workflows.
 
-**Orders Service — Java + PostgreSQL**
+### Orders Service — Java + PostgreSQL
 
 The orders service handles the lifecycle of an order after it's placed: fulfillment, status tracking, and history. It also uses PostgreSQL — but a completely separate database from checkout's. Even when two services use the same technology, they should never share a database. If they did, a schema change in one could break the other, and a slow query in one could lock resources the other needs. Separate databases mean separate ownership.
 
 ---
 
-**The Most Important Part: Async Checkout**
+## The Most Important Part: Async Checkout
 
 Here's where the architecture gets interesting.
 
@@ -100,7 +96,7 @@ This is the **publish/subscribe pattern**, and it delivers three concrete benefi
 
 ---
 
-**The API Gateway: One Door Into the System**
+## The API Gateway: One Door Into the System
 
 Notice that the browser never talks directly to Catalog, Cart, or Checkout. All traffic flows through the UI Service — a simplified version of the **API Gateway pattern**.
 
@@ -110,7 +106,7 @@ The UI Service solves all of this. It's the single entry point — routing reque
 
 ---
 
-**How These Decisions Work Together**
+## How These Decisions Work Together
 
 These patterns aren't independent — they reinforce each other:
 
@@ -125,4 +121,4 @@ That's the actual goal of microservices — not the technology itself, but the f
 
 ---
 
-Suggested tags: `Microservices`, `Software Architecture`, `Backend Development`, `System Design`, `DevOps`
+**Tags:** `Microservices` · `Software Architecture` · `Backend Development` · `System Design` · `DevOps`
