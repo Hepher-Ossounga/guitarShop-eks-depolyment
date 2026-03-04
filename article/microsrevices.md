@@ -120,5 +120,3 @@ The result is a system where services can fail, scale, and evolve independently.
 That's the actual goal of microservices — not the technology itself, but the flexibility and resilience it enables. And GuitarShop demonstrates each of these principles with concrete, deliberate choices at every layer.
 
 ---
-
-**Tags:** `Microservices` · `Software Architecture` · `Backend Development` · `System Design` · `DevOps`
