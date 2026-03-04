@@ -35,12 +35,21 @@ async function publishOrderCreated(order) {
     return;
   }
   const message = Buffer.from(JSON.stringify({
-    event:     'ORDER_CREATED',
-    orderId:   order.id,
-    customerId: order.customer_id,
-    total:     order.total,
-    items:     order.items,
-    timestamp: new Date().toISOString(),
+    event:        'ORDER_CREATED',
+    orderId:      order.id,
+    customerId:   order.customer_id,
+    email:        order.email,
+    firstName:    order.first_name,
+    lastName:     order.last_name,
+    address:      order.address,
+    city:         order.city,
+    country:      order.country,
+    postalCode:   order.postal_code,
+    items:        typeof order.items === 'string' ? JSON.parse(order.items) : order.items,
+    subtotal:     order.subtotal,
+    shippingCost: order.shipping_cost,
+    total:        order.total,
+    timestamp:    new Date().toISOString(),
   }));
   channel.publish(EXCHANGE, ROUTING_KEY, message, { persistent: true });
   logger.info(`📨 Published ORDER_CREATED for order ${order.id}`);

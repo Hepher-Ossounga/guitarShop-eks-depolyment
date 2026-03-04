@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan  = require('morgan');
 const { logger } = require('./config/logger');
+const { connectMQ } = require('./services/messaging');
 const checkoutRoutes = require('./routes/checkout');
 
 const app  = express();
@@ -25,4 +26,5 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   logger.info(`🎸 GuitarShop Checkout Service running on :${PORT}`);
+  connectMQ();
 });

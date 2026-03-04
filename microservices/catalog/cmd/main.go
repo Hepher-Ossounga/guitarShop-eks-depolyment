@@ -159,7 +159,7 @@ func listProductsHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 	query := "SELECT id,name,description,price,category,brand,stock,image_url,created_at FROM products WHERE 1=1"
 	var args []any
 	if c := q.Get("category"); c != "" {
-		query += " AND category=?"
+		query += " AND LOWER(REPLACE(category, ' ', '-'))=LOWER(?)"
 		args = append(args, c)
 	}
 	if s := q.Get("search"); s != "" {
