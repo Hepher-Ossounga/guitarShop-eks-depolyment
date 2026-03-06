@@ -64,7 +64,6 @@ The browser talks to one service: the UI Service on port 8080. It routes every r
 
 When an order is placed, Checkout saves to its own database, publishes an `ORDER_CREATED` event to RabbitMQ, and returns a confirmation immediately. The Orders service consumes the event in the background — independently, asynchronously, without blocking the checkout response.
 
-That decoupling is what makes the system resilient. It's also what makes Kubernetes deployments cleaner: services can be updated, restarted, or scaled without coordination.
 
 <img src="../images/rabbit.png" width="1000"/>
 
