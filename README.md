@@ -18,37 +18,21 @@ Runs fully locally with Docker.
 ##  Architecture Diagram
 
 ```mermaid
-flowchart TB
+flowchart TD
+    Browser -->|HTTP| UI
 
-  UI["UI Service<br/>Java 17<br/>Spring Boot + Thymeleaf<br/>Port 8080"]:::svc
+    UI -->|GET /products| Catalog
+    UI -->|GET /cart / POST /cart| Cart
+    UI -->|POST /checkout| Checkout
+    UI -->|GET /orders| Orders
 
-  CATALOG["Catalog Service<br/>Go 1.21"]:::svc
-  CART["Cart Service<br/>Java 17"]:::svc
-  CHECKOUT["Checkout Service<br/>Node.js 18"]:::svc
-  ORDERS["Orders Service<br/>Java 17"]:::svc
+    Catalog --> MySQL[(MySQL)]
+    Cart --> Redis[(Redis)]
+    Checkout --> CheckoutDB[(PostgreSQL<br/>Checkout)]
+    Orders --> OrdersDB[(PostgreSQL<br/>Orders)]
 
-  MYSQL[("MySQL 8.0<br/>Catalog DB")]:::db
-  REDIS[("Redis 7<br/>Cart DB")]:::db
-  PG1[("PostgreSQL 15<br/>Checkout DB")]:::db
-  PG2[("PostgreSQL 15<br/>Orders DB")]:::db
-  MQ[("RabbitMQ 3.12<br/>Events")]:::mq
-
-  UI -->|HTTP| CATALOG
-  UI -->|HTTP| CART
-  UI -->|HTTP| CHECKOUT
-  UI -->|HTTP| ORDERS
-
-  CATALOG --> MYSQL
-  CART --> REDIS
-  CHECKOUT --> PG1
-  ORDERS --> PG2
-
-  CHECKOUT -->|ORDER_CREATED| MQ
-  MQ -->|Event| ORDERS
-
-  classDef svc fill:#eef6ff,stroke:#2563eb,stroke-width:1px,color:#111111;
-  classDef db fill:#fff7ed,stroke:#ea580c,stroke-width:1px,color:#111111;
-  classDef mq fill:#f5f3ff,stroke:#7c3aed,stroke-width:1px,color:#111111;
+    Checkout -->|publish ORDER_CREATED| RabbitMQ([RabbitMQ])
+    RabbitMQ -->|deliver event| Orders
 ```
 ---
 
