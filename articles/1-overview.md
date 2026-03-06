@@ -74,8 +74,8 @@ That decoupling is what makes the system resilient. It's also what makes Kuberne
 
 | Part | Layer | Topic |
 |------|-------|-------|
-| 1 | Dev | [Microservices Architecture — from concept to a real project](https://github.com/Hepher-Ossounga/guitarShop-depolyment/blob/main/article/microsrevices.md) |
-| 2 | Dev | [Polyglot persistence — why each service uses a different database](https://github.com/Hepher-Ossounga/guitarShop-depolyment/blob/main/article/2-polyglot-persistence.md) |
+| 1 | Dev | [overview](https://github.com/Hepher-Ossounga/guitarShop-depolyment/blob/main/articles/1-overview.md)
+| 2 | Dev | [Polyglot persistence — why each service uses a different database](https://github.com/Hepher-Ossounga/guitarShop-depolyment/blob/main/articles/2-polyglot-persistence.md) |
 | 3 | DevOps | [Containerizing polyglot services — Dockerfiles across Go, Java, and Node.js](https://github.com/Hepher-Ossounga/guitarShop-depolyment/blob/main/article/3-dockerfiles.md) |
 | 4 | DevOps | [Docker Compose — running the full stack locally](https://github.com/Hepher-Ossounga/guitarShop-depolyment/blob/main/article/4-docker-compose.md) |
 | 5 | DevOps | Deploying to AWS EKS — ECR, cluster setup, Kubernetes manifests |
