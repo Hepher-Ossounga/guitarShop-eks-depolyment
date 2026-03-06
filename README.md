@@ -9,7 +9,7 @@ Runs fully locally with Docker.
 ---
 
 ## Preview 
-<img src="./images/preview.png" width="1000"/>
+<img src="./images/UI.png.png" width="1000"/>
 
 ## Component Diagram
 <!-- diagram.png is generated from the Mermaid markup in the next section -->
