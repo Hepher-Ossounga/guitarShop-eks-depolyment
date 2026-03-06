@@ -8,7 +8,7 @@
 
 This is a DevOps series. It covers containerizing a real application, pushing images to AWS ECR, deploying to an EKS cluster, managing configuration with Helm, automating the pipeline with GitHub Actions, and wiring up observability with CloudWatch.
 
-But DevOps doesn't exist in a vacuum. To understand the deployment, the application has to make sense first — the services, how they communicate, why each one has its own database. That context matters when writing Kubernetes manifests, configuring health checks, or debugging a failing pod.
+To understand the eks deployment, the application has to make sense first — the services, how they communicate, why each one has its own database. That context matters when writing Kubernetes manifests, configuring health checks, or debugging a failing pod.
 
 So this series starts with the application, then moves into the infrastructure.
 
@@ -74,7 +74,7 @@ That decoupling is what makes the system resilient. It's also what makes Kuberne
 
 | Part | Layer | Topic |
 |------|-------|-------|
-| 1 | Dev | Architecture & core patterns — the decisions behind the structure |
+| 1 | Dev | Microservices Architecture — from concept to a real project |
 | 2 | Dev | Polyglot persistence — why each service uses a different database |
 | 3 | DevOps | Containerizing polyglot services — Dockerfiles across Go, Java, and Node.js |
 | 4 | DevOps | Docker Compose — running the full stack locally |
