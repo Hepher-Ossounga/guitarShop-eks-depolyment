@@ -4,7 +4,7 @@
 
 ---
 
-*This is Part 4 of a series documenting the full build and deployment of GuitarShop — a microservices e-commerce application built with Go, Java, Node.js, and deployed on AWS EKS. [Start with the overview](./1-overview.md) if this is the first article in the series.*
+*This is Part 4 of a series documenting the full build and deployment of GuitarShop — a microservices e-commerce application built with Go, Java, Node.js, and deployed on AWS EKS. [Start with the overview](https://github.com/Hepher-Ossounga/guitarShop-depolyment/blob/main/article/1-overview.md) if this is the first article in the series.*
 
 ---
 
