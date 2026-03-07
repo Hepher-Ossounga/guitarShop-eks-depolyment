@@ -4,7 +4,7 @@
 
 ---
 
-*This is Part 2 of a series documenting the full build and deployment of GuitarShop — a microservices e-commerce application built with Go, Java, Node.js, and deployed on AWS EKS. [Start with the overview](https://github.com/Hepher-Ossounga/guitarShop-depolyment/blob/main/article/1-overview.md) if this is the first article in the series.*
+*This is Part 2 of a series documenting the full build and deployment of GuitarShop — a microservices e-commerce application built with Go, Java, Node.js, and deployed on AWS EKS. [Start with the overview](https://github.com/Hepher-Ossounga/guitarShop-depolyment/blob/main/articles/1-overview.md) if this is the first article in the series.*
 
 ---
 
@@ -136,6 +136,8 @@ The key detail is the volume name: `orders-db-data`, not `checkout-db-data`. Sam
 Every database is an independent unit with its own container, volume, and credentials. In Docker Compose that means four separate service definitions and four named volumes. In Kubernetes it means four Deployments, four PersistentVolumeClaims, and four Secrets.
 
 No service shares storage with another. Losing the cart Redis instance does not affect checkout. Restarting the orders database does not touch the catalog.
+
+Each of these services also needs to be packaged into a container image. Five services, three different languages — Go, Java, and Node.js — each with its own build toolchain and runtime requirements. [Part 3](https://github.com/Hepher-Ossounga/guitarShop-depolyment/blob/main/articles/3-dockerfiles.md) covers how each Dockerfile is structured and why the build process differs per language.
 
 ---
 
