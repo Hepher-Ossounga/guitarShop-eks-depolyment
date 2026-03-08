@@ -1,7 +1,4 @@
 # I Built a Microservices App and Deployed It on AWS — Here's the Full Stack
-
-*Before the deployment, there's the application. This is both.*
-
 ---
 
 ## What This Series Is About
