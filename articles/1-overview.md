@@ -102,3 +102,7 @@ One command starts all 10 containers in the right order, with health checks ensu
 <img src="../images/containers.png" width="1000"/>
 
 ---
+
+GuitarShop is a working application — ten containers, four languages, four databases, one message broker. The architecture is deliberate: each service owns its data, communicates over defined interfaces, and can be deployed, scaled, or debugged independently.
+
+Part 2 goes deeper on that foundation — four services, four databases, and exactly why each one was chosen. MySQL for the catalog, Redis for the cart, PostgreSQL for checkout and orders. Each decision has a reason, and each reason shows up again in the Kubernetes manifests.
