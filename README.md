@@ -67,7 +67,6 @@ flowchart TD
 |---|---|
 | `microservices/` | Source code for all 5 services |
 | `docs/` | Step-by-step documentation — Docker, EKS, Helm, CI/CD |
-| `infrastructure/` | Infrastructure as Code (Terraform) |
 | `images/` | Architecture diagrams and screenshots |
 | `docker-compose.yml` | Run the full stack locally |
 | `article/` | Written series documenting the full build and deployment |
