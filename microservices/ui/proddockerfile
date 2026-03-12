@@ -1,0 +1,64 @@
+# ── Stage 1: Build ────────────────────────────────────────────────────────────
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS builder
+
+RUN dnf --setopt=install_weak_deps=False install -q -y \
+    java-21-amazon-corretto-headless \
+    maven \
+    which \
+    tar \
+    gzip \
+    && \
+    dnf clean all
+
+WORKDIR /app
+
+COPY .mvn .mvn
+COPY mvnw .
+COPY pom.xml .
+RUN ./mvnw dependency:go-offline -B -q
+
+COPY src ./src
+RUN ./mvnw clean package -DskipTests -B -q && \
+    mv target/ui-service-*.jar /app.jar
+
+# ── Stage 2: Runtime ──────────────────────────────────────────────────────────
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023
+
+LABEL org.opencontainers.image.title="guitar-shop-ui" \
+      org.opencontainers.image.source="https://github.com/your-org/guitar-shop"
+
+RUN dnf --setopt=install_weak_deps=False install -q -y \
+    java-21-amazon-corretto-headless \
+    shadow-utils \
+    && \
+    dnf clean all
+
+RUN dnf -q -y swap libcurl-minimal libcurl-full \
+    && dnf -q -y swap curl-minimal curl-full
+
+ENV APPUSER=guitarshop
+ENV APPUID=1000
+ENV APPGID=1000
+
+RUN useradd \
+    --home "/app" \
+    --create-home \
+    --user-group \
+    --uid "$APPUID" \
+    "$APPUSER"
+
+ENV JAVA_TOOL_OPTIONS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError -Djava.security.egd=file:/dev/./urandom -Dfile.encoding=UTF-8"
+ENV JAVA_OPTS=
+ENV SPRING_PROFILES_ACTIVE=prod
+
+WORKDIR /app
+USER guitarshop
+
+COPY --chown=guitarshop:guitarshop --from=builder /app.jar .
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8080/actuator/health || exit 1
+
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]

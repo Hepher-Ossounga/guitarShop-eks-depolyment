@@ -3,6 +3,8 @@
 The cart service is a Java/Spring Boot app that stores shopping cart data in Redis.
 It uses a two-stage Docker build to keep the final image small and secure.
 
+> **Note:** The `docker run` steps in this doc are for **isolated testing** of this service's image on its own — useful for verifying the Dockerfile or debugging the service in isolation. To run the full application, use Docker Compose instead — see [11-docker-compose.md](11-docker-compose.md).
+
 ---
 
 ## I. Prerequisites
@@ -35,20 +37,25 @@ COPY src ./src
 RUN mvn clean package -DskipTests -B
 
 # Stage 2 — Runtime
-FROM gcr.io/distroless/java17-debian12
+FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
+RUN apt-get update && apt-get install -y --no-install-recommends wget && rm -rf /var/lib/apt/lists/*
+RUN groupadd -r guitarshop && useradd -r -g guitarshop guitarshop
+
+COPY --from=builder /app/target/cart-service.jar app.jar
+RUN chown guitarshop:guitarshop app.jar
+USER guitarshop
 
 EXPOSE 8080
 
 ENTRYPOINT ["java","-jar", "app.jar"]
 ```
 
-| Stage   | Base Image                        | Purpose                          |
-|---------|-----------------------------------|----------------------------------|
-| builder | maven:3.9-eclipse-temurin-17      | Compile Java source into a jar   |
-| runtime | gcr.io/distroless/java17-debian12 | Run the jar, nothing else        |
+| Stage   | Base Image                   | Purpose                          |
+|---------|------------------------------|----------------------------------|
+| builder | maven:3.9-eclipse-temurin-17 | Compile Java source into a jar   |
+| runtime | eclipse-temurin:17-jre-jammy | Run the jar with JRE only        |
 
 ---
 

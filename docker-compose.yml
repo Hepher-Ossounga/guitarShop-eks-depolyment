@@ -1,17 +1,5 @@
 version: "3.9"
 
-# ─── GuitarShop — Local Development Stack ─────────────────────────────────────
-#
-# 10-container application:
-#   5 microservices: ui, catalog, cart, checkout, orders
-#   3 databases:     catalog-db (MySQL), checkout-db (PostgreSQL), orders-db (PostgreSQL)
-#   1 cache:         cart-redis (Redis)
-#   1 messaging:     rabbitmq (RabbitMQ)
-#
-# Usage:
-#   docker compose up --build
-#   Access: http://localhost:8080
-
 networks:
   guitarshop-net:
     driver: bridge

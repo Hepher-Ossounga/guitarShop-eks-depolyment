@@ -4,6 +4,8 @@ The checkout service is a Node.js/Express app that processes orders, stores them
 PostgreSQL, and publishes order events to RabbitMQ for the orders service to consume.
 It uses a two-stage Docker build to install only production dependencies in the final image.
 
+> **Note:** The `docker run` steps in this doc are for **isolated testing** of this service's image on its own — useful for verifying the Dockerfile or debugging the service in isolation. To run the full application, use Docker Compose instead — see [11-docker-compose.md](11-docker-compose.md).
+
 ---
 
 ## I. Prerequisites

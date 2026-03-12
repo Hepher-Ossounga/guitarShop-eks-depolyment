@@ -3,6 +3,8 @@
 The catalog service is a Go app that serves guitar product data from a MySQL database.
 It uses a two-stage Docker build to produce a small, secure final image.
 
+> **Note:** The `docker run` steps in this doc are for **isolated testing** of this service's image on its own — useful for verifying the Dockerfile or debugging the service in isolation. To run the full application, use Docker Compose instead — see [11-docker-compose.md](11-docker-compose.md).
+
 ---
 
 ## I. Prerequisites
@@ -25,24 +27,27 @@ vim Dockerfile
 Dockerfile:
 ```dockerfile
 # Stage 1 — Build
-FROM golang:1.21-alpine AS builder  
+FROM golang:1.21-alpine AS builder
 
 WORKDIR /app
 
-RUN apk add --no-cache git           
+RUN apk add --no-cache git
 
 COPY go.mod go.sum ./
-RUN go mod download                  
+RUN go mod download
 
 COPY cmd/ ./cmd/
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o catalog ./cmd/main.go
 
 # Stage 2 — Runtime
-FROM gcr.io/distroless/static-debian12   
+FROM alpine:3.19
 
 WORKDIR /app
+RUN addgroup -S guitarshop && adduser -S guitarshop -G guitarshop
+
 COPY --from=builder /app/catalog .
-USER nonroot                             
+RUN chown guitarshop:guitarshop catalog
+USER guitarshop
 
 EXPOSE 8080
 
@@ -52,7 +57,7 @@ ENTRYPOINT ["/app/catalog"]
 | Stage   | Base Image         | Purpose                              |
 |---------|--------------------|--------------------------------------|
 | builder | golang:1.21-alpine | Compile Go source into a binary      |
-| runtime | gcr.io/distroless/static-debian12 | Run the binary, nothing else  |
+| runtime | alpine:3.19        | Run the binary, nothing else         |
 
 > Key build flags: `CGO_ENABLED=0` disables C bindings (pure Go binary),
 > `GOOS=linux` targets Linux, `-ldflags="-s -w"` strips debug info to reduce image size.

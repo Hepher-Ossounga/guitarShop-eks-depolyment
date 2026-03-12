@@ -106,7 +106,43 @@ The runtime stage is `alpine:3.19` — a minimal Linux image under 10MB. The fin
 
 ## Cart, Orders, UI: Java / Spring Boot
 
-The three Java services are nearly identical. Maven builds the JAR in the build stage, the JRE runs it in the runtime stage.
+The three Java services share the same two-stage pattern. Maven builds the JAR in the build stage, the JRE runs it in the runtime stage.
+
+`mvn dependency:go-offline` downloads all Maven dependencies before source is compiled. `-B` is batch mode — suppresses interactive prompts and progress output, which keeps CI logs clean.
+
+`mvn clean package -DskipTests` compiles and packages the JAR. `-DskipTests` skips unit tests — tests belong in CI before the image is built, not inside Docker.
+
+The build stage uses `maven:3.9-eclipse-temurin-17` which includes the full JDK and Maven. The runtime stage uses `eclipse-temurin:17-jre-jammy` — only the JRE. No compiler, no Maven in production.
+
+The three services differ in their JAR filename and one runtime detail:
+
+**Cart** installs `wget` before the app user is created (used for health probes):
+
+```dockerfile
+# Stage 1: Build
+FROM maven:3.9-eclipse-temurin-17 AS builder
+
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+COPY src ./src
+RUN mvn clean package -DskipTests -B
+
+# Stage 2: Runtime
+FROM eclipse-temurin:17-jre-jammy
+
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends wget && rm -rf /var/lib/apt/lists/*
+RUN groupadd -r guitarshop && useradd -r -g guitarshop guitarshop
+COPY --from=builder /app/target/cart-service.jar app.jar
+RUN chown guitarshop:guitarshop app.jar
+USER guitarshop
+
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
+```
+
+**Orders and UI** follow the same structure without the `wget` step:
 
 ```dockerfile
 # Stage 1: Build
@@ -123,7 +159,7 @@ FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 RUN groupadd -r guitarshop && useradd -r -g guitarshop guitarshop
-COPY --from=builder /app/target/cart-service.jar app.jar
+COPY --from=builder /app/target/orders-service-*.jar app.jar  # ui-service-*.jar for UI
 RUN chown guitarshop:guitarshop app.jar
 USER guitarshop
 
@@ -131,13 +167,7 @@ EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
 ```
 
-`mvn dependency:go-offline` downloads all Maven dependencies before source is compiled. `-B` is batch mode — suppresses interactive prompts and progress output, which keeps CI logs clean.
-
-`mvn clean package -DskipTests` compiles and packages the JAR. `-DskipTests` skips unit tests — tests belong in CI before the image is built, not inside Docker.
-
-The build stage uses `maven:3.9-eclipse-temurin-17` which includes the full JDK and Maven. The runtime stage uses `eclipse-temurin:17-jre-jammy` — only the JRE. No compiler, no Maven in production.
-
-The three services differ only in the JAR filename:
+JAR filenames:
 - Cart → `cart-service.jar`
 - Orders → `orders-service-*.jar`
 - UI → `ui-service-*.jar`

@@ -3,6 +3,8 @@
 The orders service is a Java/Spring Boot app that consumes order events from RabbitMQ
 and persists them to a PostgreSQL database. It uses a two-stage Docker build.
 
+> **Note:** The `docker run` steps in this doc are for **isolated testing** of this service's image on its own — useful for verifying the Dockerfile or debugging the service in isolation. To run the full application, use Docker Compose instead — see [11-docker-compose.md](11-docker-compose.md).
+
 ---
 
 ## I. Prerequisites
@@ -62,8 +64,8 @@ ENTRYPOINT ["java","-jar", "app.jar"]
 > These are injected into `application.yml` placeholders at startup. See
 > [8-orders-config.md](8-orders-config.md) for the full config walkthrough.
 
-> Note: orders uses `eclipse-temurin:17-jre-jammy` instead of `distroless` (used by cart).
-> It includes a shell, which is useful for debugging but slightly larger.
+> Note: orders uses `eclipse-temurin:17-jre-jammy` — a JRE-only image with no compiler or Maven.
+> It includes a shell, which is useful for debugging.
 
 ---
 

@@ -4,6 +4,8 @@ The UI service is a Java/Spring Boot + Thymeleaf app. It is the frontend of the 
 — it calls all other microservices (catalog, cart, checkout, orders) and renders the HTML
 pages that users see. It uses a two-stage Docker build.
 
+> **Note:** The steps below are for **isolated testing** of this service's image on its own. The UI depends on all four backend services, so true isolated testing isn't practical — use Docker Compose to run the full stack instead — see [11-docker-compose.md](11-docker-compose.md).
+
 ---
 
 ## I. Prerequisites
