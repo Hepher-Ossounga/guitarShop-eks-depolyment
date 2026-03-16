@@ -1,17 +1,17 @@
 variable "environment_name" {
-  description = "Environment name used in resource names and tags"
+  description = "Deployment environment name (e.g. dev, staging, prod) used in GuitarShop resource names and tags"
   type        = string
   default     = "dev"
 }
 
 variable "vpc_cidr" {
-  description = "CIDR block for the VPC"
+  description = "CIDR block for the GuitarShop VPC"
   type        = string
   default     = "10.0.0.0/16"
 }
 
 variable "tags" {
-  description = "Global tags to apply to all resources"
+  description = "Global tags applied to all GuitarShop VPC resources"
   type        = map(string)
   default     = {
     Terraform = "true"
@@ -19,7 +19,7 @@ variable "tags" {
 }
 
 variable "subnet_newbits" {
-  description = "Number of new bits to add to VPC CIDR to generate subnets (e.g., 8 means /24 from /16)"
+  description = "Number of additional bits added to the VPC CIDR to calculate subnet sizes for GuitarShop (e.g., 8 produces /24 subnets from a /16 VPC)"
   type        = number
   default     = 8
 }
