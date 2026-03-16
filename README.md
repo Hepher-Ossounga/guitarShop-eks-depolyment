@@ -61,34 +61,6 @@ flowchart TD
 ---
 
 
-## Repo Structure
-
-| Folder | Description |
-|---|---|
-| `microservices/` | Source code for all 5 services |
-| `docs/` | Step-by-step documentation — Docker, EKS, Helm, CI/CD |
-| `images/` | Architecture diagrams and screenshots |
-| `docker-compose.yml` | Run the full stack locally |
-| `article/` | Written series documenting the full build and deployment |
-
----
-
-## Article Series
-
-| Part | Layer | Topic |
-|------|-------|-------|
-| 0 | — | [Project Overview](https://github.com/Hepher-Ossounga/guitarShop-depolyment/blob/main/article/1-overview.md) |
-| 1 | Dev | [Microservices Architecture — from concept to a real project](https://github.com/Hepher-Ossounga/guitarShop-depolyment/blob/main/article/microsrevices.md) |
-| 2 | Dev | [Polyglot Persistence — why each service uses a different database](https://github.com/Hepher-Ossounga/guitarShop-depolyment/blob/main/article/2-polyglot-persistence.md) |
-| 3 | DevOps | [Containerizing Polyglot Services — Dockerfiles across Go, Java, and Node.js](https://github.com/Hepher-Ossounga/guitarShop-depolyment/blob/main/article/3-dockerfiles.md) |
-| 4 | DevOps | [Docker Compose — running the full stack locally](https://github.com/Hepher-Ossounga/guitarShop-depolyment/blob/main/article/4-docker-compose.md) |
-| 5 | DevOps | Deploying to AWS EKS — ECR, cluster setup, Kubernetes manifests |
-| 6 | DevOps | Helm — managing configuration and deploying with charts |
-| 7 | DevOps | CI/CD — GitHub Actions pipeline from push to production |
-| 8 | DevOps | Observability — CloudWatch logging and monitoring |
-
----
-
 ##  Run Locally
 
 Clone the repository:
