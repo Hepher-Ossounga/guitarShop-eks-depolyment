@@ -11,7 +11,6 @@ volumes:
   redis-data:
   rabbitmq-data:
 
-# ─── Common health-check defaults ─────────────────────────────────────────────
 x-healthcheck-defaults: &hc-defaults
   interval: 10s
   timeout: 5s
@@ -20,22 +19,24 @@ x-healthcheck-defaults: &hc-defaults
 
 services:
 
-  # ─── Infrastructure ──────────────────────────────────────────────────────────
 
   catalog-db:
     image: mysql:8.0
     container_name: guitarshop-catalog-db
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE:      guitarshop_catalog
       MYSQL_USER:          guitarshop
-      MYSQL_PASSWORD:      guitarshop123
+      MYSQL_PASSWORD:      ${DB_PASSWORD}
     volumes:
       - catalog-db-data:/var/lib/mysql
     networks:
       - guitarshop-net
+    restart: always
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "guitarshop", "-pguitarshop123"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "guitarshop", "-p${DB_PASSWORD}"]
       <<: *hc-defaults
 
   checkout-db:
@@ -44,11 +45,14 @@ services:
     environment:
       POSTGRES_DB:       guitarshop_checkout
       POSTGRES_USER:     guitarshop
-      POSTGRES_PASSWORD: guitarshop123
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - checkout-db-data:/var/lib/postgresql/data
     networks:
       - guitarshop-net
+    restart: always
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U guitarshop -d guitarshop_checkout"]
       <<: *hc-defaults
@@ -59,11 +63,14 @@ services:
     environment:
       POSTGRES_DB:       guitarshop_orders
       POSTGRES_USER:     guitarshop
-      POSTGRES_PASSWORD: guitarshop123
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - orders-db-data:/var/lib/postgresql/data
     networks:
       - guitarshop-net
+    restart: always
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U guitarshop -d guitarshop_orders"]
       <<: *hc-defaults
@@ -76,6 +83,9 @@ services:
       - redis-data:/data
     networks:
       - guitarshop-net
+    restart: always
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       <<: *hc-defaults
@@ -85,18 +95,19 @@ services:
     container_name: guitarshop-rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: guitarshop
-      RABBITMQ_DEFAULT_PASS: guitarshop123
+      RABBITMQ_DEFAULT_PASS: ${DB_PASSWORD}
     ports:
       - "15672:15672"   # Management UI
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
       - guitarshop-net
+    restart: always
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       <<: *hc-defaults
-
-  # ─── Microservices ────────────────────────────────────────────────────────────
 
   catalog:
     build:
@@ -108,13 +119,24 @@ services:
       DB_PORT:     "3306"
       DB_NAME:     guitarshop_catalog
       DB_USER:     guitarshop
-      DB_PASSWORD: guitarshop123
+      DB_PASSWORD: ${DB_PASSWORD}
       PORT:        "8080"
     depends_on:
       catalog-db:
         condition: service_healthy
+        restart: true
     networks:
       - guitarshop-net
+    restart: always
+    cap_add:
+      - NET_BIND_SERVICE
+    cap_drop:
+      - ALL
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health || exit 1"]
       <<: *hc-defaults
@@ -132,6 +154,16 @@ services:
         condition: service_healthy
     networks:
       - guitarshop-net
+    restart: always
+    cap_add:
+      - NET_BIND_SERVICE
+    cap_drop:
+      - ALL
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8080/cart/health || exit 1"]
       <<: *hc-defaults
@@ -146,8 +178,8 @@ services:
       DB_PORT:       "5432"
       DB_NAME:       guitarshop_checkout
       DB_USER:       guitarshop
-      DB_PASSWORD:   guitarshop123
-      RABBITMQ_URL:  amqp://guitarshop:guitarshop123@rabbitmq:5672
+      DB_PASSWORD:   ${DB_PASSWORD}
+      RABBITMQ_URL:  amqp://guitarshop:${DB_PASSWORD}@rabbitmq:5672
       PORT:          "8080"
     depends_on:
       checkout-db:
@@ -156,6 +188,16 @@ services:
         condition: service_healthy
     networks:
       - guitarshop-net
+    restart: always
+    cap_add:
+      - NET_BIND_SERVICE
+    cap_drop:
+      - ALL
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health || exit 1"]
       <<: *hc-defaults
@@ -170,18 +212,29 @@ services:
       DB_PORT:           "5432"
       DB_NAME:           guitarshop_orders
       DB_USER:           guitarshop
-      DB_PASSWORD:       guitarshop123
+      DB_PASSWORD:       ${DB_PASSWORD}
       RABBITMQ_HOST:     rabbitmq
       RABBITMQ_PORT:     "5672"
       RABBITMQ_USER:     guitarshop
-      RABBITMQ_PASSWORD: guitarshop123
+      RABBITMQ_PASSWORD: ${DB_PASSWORD}
     depends_on:
       orders-db:
         condition: service_healthy
+        restart: true
       rabbitmq:
         condition: service_healthy
     networks:
       - guitarshop-net
+    restart: always
+    cap_add:
+      - NET_BIND_SERVICE
+    cap_drop:
+      - ALL
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8080/orders/health || exit 1"]
       <<: *hc-defaults
@@ -201,14 +254,28 @@ services:
     depends_on:
       catalog:
         condition: service_healthy
+        restart: true
       cart:
         condition: service_healthy
+        restart: true
       checkout:
         condition: service_healthy
+        restart: true
       orders:
         condition: service_healthy
+        restart: true
     networks:
       - guitarshop-net
+    restart: always
+    cap_add:
+      - NET_BIND_SERVICE
+    cap_drop:
+      - ALL
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health || exit 1"]
       <<: *hc-defaults

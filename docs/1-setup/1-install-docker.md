@@ -41,18 +41,4 @@ sudo usermod -aG docker ec2-user
 
 ```bash
 docker version
-docker run hello-world
-docker images
-docker ps -a
 ```
-
----
-
-## V. Cleanup
-
-```bash
-docker rm $(docker ps -aq)
-docker rmi hello-world
-```
-
-> Stop or terminate the EC2 instance when not in use to avoid AWS charges.

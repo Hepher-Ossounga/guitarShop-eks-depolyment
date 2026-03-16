@@ -31,3 +31,19 @@ secrets-override.yaml
 
 
 infrastructure/
+.env
+
+# LinkedIn posts
+linkedin-post.txt
+linkedin-posts.txt
+
+# Articles
+articles/
+
+# Docs sections
+docs/2-docker/
+docs/3*/
+docs/4*/
+docs/5*/
+docs/6*/
+docs/7*/

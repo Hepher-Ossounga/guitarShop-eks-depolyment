@@ -109,6 +109,48 @@ Step 3 — UI starts last:
 
 ---
 
+### Security Hardening
+
+All microservices (`catalog`, `cart`, `checkout`, `orders`, `ui`) include the following security settings:
+
+```yaml
+cap_add:
+  - NET_BIND_SERVICE
+cap_drop:
+  - ALL
+read_only: true
+security_opt:
+  - no-new-privileges:true
+tmpfs:
+  - /tmp:rw,noexec,nosuid
+```
+
+- `cap_drop: ALL` — strips every Linux capability from the container
+- `cap_add: NET_BIND_SERVICE` — adds back only the capability to bind to network ports, keeping flexibility to run on any port including privileged ports below 1024
+- `read_only: true` — container filesystem cannot be written to (prevents malware persistence)
+- `no-new-privileges:true` — process can never escalate its own privileges even via setuid binaries
+- `tmpfs: /tmp` — mounts `/tmp` in RAM only; `noexec` prevents execution of files there, `nosuid` blocks privilege escalation
+
+Infrastructure services (`catalog-db`, `checkout-db`, `orders-db`, `cart-redis`, `rabbitmq`) have `security_opt: no-new-privileges:true` but not `cap_drop` or `read_only` — databases need write access to their volumes and specific capabilities to manage file permissions.
+
+---
+
+### Secrets via Environment Variables
+
+Passwords are never hardcoded. They are loaded from a `.env` file:
+
+```yaml
+environment:
+  DB_PASSWORD: ${DB_PASSWORD}
+```
+
+```bash
+# .env (never committed to git)
+DB_PASSWORD=guitarshop123
+```
+
+---
+
 ### Ports
 
 ```yaml
@@ -179,7 +221,7 @@ curl http://<EC2-PUBLIC-IP>:8080          # Full storefront in browser
 ```
 http://<EC2-PUBLIC-IP>:15672
 Username: guitarshop
-Password: guitarshop123
+Password: <value of DB_PASSWORD in your .env>
 ```
 
 ---

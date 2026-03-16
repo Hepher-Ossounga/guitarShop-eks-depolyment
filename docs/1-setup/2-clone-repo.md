@@ -19,19 +19,6 @@ git --version
 ## III. Clone the Repository
 
 ```bash
-git clone https://github.com/Hepher-Ossounga/guitarShop-App.git
-cd guitarshop-app
-```
-
----
-
-## IV. Verify the Project Structure
-
-```bash
-ls -la
-```
-
-You should see:
-<img src="../../images/ls-la.png" width="1000"/>
-```
+git clone https://github.com/Hepher-Ossounga/ecommerce-guitarshop.git
+cd ecommerce-guitarshop
 ```
